@@ -21,7 +21,6 @@ const textStyle = {
 export default function StarRate({ maxRating = 5 }) {
     const [rating, setRating] = useState(1)
     const [tempRating, setTempRating] = useState(0)
-
     function handlerating(rating) {
         setRating(rating)
     }
