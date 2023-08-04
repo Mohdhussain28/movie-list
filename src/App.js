@@ -68,7 +68,6 @@ export default function App() {
         setError("");
         const res = await
           fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=c4e02702&s=${query}`);
-
         if (!res.ok)
           throw new Error("Something went wrong with fetching movies");
 
@@ -267,7 +266,19 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched, onDelet
     }
     getMovieDetails();
   },
-    [selectedId])
+    [selectedId]);
+
+
+  useEffect(function () {
+    if (!title) return;
+    document.title = `Movie | ${title}`
+
+    return function () {
+      document.title = "UsePopcorn"
+    }
+  })
+
+
   return (
     <div className="details" >
 
