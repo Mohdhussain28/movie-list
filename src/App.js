@@ -287,7 +287,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched, onDelet
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.key === 'Escape') {
-        console.log('Close')
         onCloseMovie()
       }
     };
