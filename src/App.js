@@ -62,12 +62,13 @@ export default function App() {
 
 
   useEffect(function () {
+    const contoller = new AbortController();
     async function fetchMovies() {
       try {
         setIsLoading(true);
         setError("");
         const res = await
-          fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=c4e02702&s=${query}`);
+          fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=c4e02702&s=${query}`, { signal: contoller.signal });
         if (!res.ok)
           throw new Error("Something went wrong with fetching movies");
 
@@ -77,10 +78,12 @@ export default function App() {
 
         console.log(data)
         setMovies(data.Search)
-
+        setError("")
       } catch (err) {
-        console.error(err.message)
-        setError(err.message)
+
+        if (err.name !== "AbortError") {
+          setError(err.message)
+        }
       } finally {
         setIsLoading(false)
       }
@@ -92,6 +95,9 @@ export default function App() {
     }
 
     fetchMovies();
+    return function () {
+      contoller.abort()
+    }
   },
     [query]
   )
@@ -278,6 +284,18 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched, onDelet
     }
   })
 
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === 'Escape') {
+        console.log('Close')
+        onCloseMovie()
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [onCloseMovie]);
 
   return (
     <div className="details" >
@@ -286,6 +304,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched, onDelet
         {
           isLoading ? <Loader /> :
             <>
+
               <button className="btn-back" onClick={onCloseMovie} >
                 &larr;
               </button>
@@ -302,9 +321,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched, onDelet
                 </p>
               </div>
             </>}
-
       </header>
-
       <section>
         <div className="rating">
           {!isWatched ?
